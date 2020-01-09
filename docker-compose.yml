@@ -24,7 +24,7 @@ services:
     container_name: phpmyadmin
     restart: always
     ports:
-      - 8080:80
+      - 18080:80
     volumes:
       - /sessions
     links:
@@ -38,6 +38,7 @@ services:
     environment:
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+#    9200 : RESTful web service /9300 : Nodes communication
     ports:
       - 9200:9200
       - 9300:9300
