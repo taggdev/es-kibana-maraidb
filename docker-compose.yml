@@ -11,6 +11,7 @@ services:
       MYSQL_USER: admin
       MYSQL_PASSWORD: adminadmin1
       MYSQL_DATABASE: enginedb
+      TZ: Asia/Bangkok
     volumes:
       #      - ./mysql:/var/lib/mysql
       - /d/temp/mariadb:/tmp
@@ -23,6 +24,8 @@ services:
     image: phpmyadmin/phpmyadmin:5.0.0
     container_name: phpmyadmin
     restart: always
+    environment:
+      TZ: Asia/Bangkok
     ports:
       - 18080:80
     volumes:
@@ -36,9 +39,9 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.1
     container_name: elasticsearch
     environment:
-      - discovery.type=single-node
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-#    9200 : RESTful web service /9300 : Nodes communication
+      discovery.type: single-node
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      TZ: Asia/Bangkok
     ports:
       - 9200:9200
       - 9300:9300
@@ -49,7 +52,7 @@ services:
     image: docker.elastic.co/kibana/kibana:7.5.1
     container_name: engine_kibana
     environment:
-      - elasticsearch.hosts=http://elasticsearch:9200
+      ELASTICSEARCH.HOSTS: "http://elasticsearch:9200"
     ports:
       - 5601:5601
     networks:
