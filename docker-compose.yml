@@ -5,7 +5,7 @@ services:
   enginedb:
     container_name: enginedb
     image: mariadb:10.4.11
-    #restart: always
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: rootroot
       MYSQL_USER: admin
@@ -18,7 +18,7 @@ services:
     ports:
       - 3306:3306
     networks:
-      - engine-net
+      - enginenet
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:5.0.0
@@ -33,7 +33,7 @@ services:
     links:
       - enginedb:db
     networks:
-      - engine-net
+      - enginenet
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.1
@@ -46,7 +46,7 @@ services:
       - 9200:9200
       - 9300:9300
     networks:
-      - engine-net
+      - enginenet
 
   engine_kibana:
     image: docker.elastic.co/kibana/kibana:7.5.1
@@ -56,7 +56,7 @@ services:
     ports:
       - 5601:5601
     networks:
-      - engine-net
+      - enginenet
 
 #  engine_es01:
 #    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.1
@@ -105,5 +105,5 @@ services:
 #    driver: local
 
 networks:
-  engine-net:
+  enginenet:
     driver: bridge
