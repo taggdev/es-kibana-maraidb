@@ -38,6 +38,7 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.1
     container_name: elasticsearch
+    restart: always
     environment:
       discovery.type: single-node
       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
@@ -51,6 +52,7 @@ services:
   engine_kibana:
     image: docker.elastic.co/kibana/kibana:7.5.1
     container_name: engine_kibana
+    restart: always
     environment:
       ELASTICSEARCH.HOSTS: "http://elasticsearch:9200"
     ports:
@@ -58,9 +60,40 @@ services:
     networks:
       - enginenet
 
+  console2es-local:
+    image: tsm-registry-01.true.th:5000/mse/fluentd-console2es:1.0
+    container_name: console2es-local
+    deploy:
+      mode: global
+      resources:
+        limits:
+          memory: 512M
+    ports:
+      - 24224:24224
+#      - target: 24224
+#        published: 24224
+#        protocol: tcp
+#        mode: host
+#      - target: 24225
+#          published: 24225
+#          protocol: tcp
+#    volumes:
+#      - /etc/localtime:/etc/localtime:ro
+    environment:
+      TZ: Asia/Bangkok
+      FLUENTD_CONF: fluentd-console.conf
+#      ES_HOSTS: http://10.95.108.206:9200,http://10.95.108.207:9200,http://10.95.108.208:9200
+      ES_HOSTS: "http://10.95.72.25:9200"
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+
   kafkadev:
     container_name: kafkadev
     image: taggdev/kafka:1.0
+    restart: always
     environment:
       ADVERTISED_HOST: localhost
       ADVERTISED_PORT: 9092
