@@ -83,6 +83,30 @@ services:
 #    command: ["redis-server", "--appendonly", "yes"]
     command: redis-server --appendonly yes
 
+  redisdev02:
+    container_name: redisdev02
+    image: redis
+    restart: always
+    ports:
+      - 6380:6379
+    volumes:
+      - /d/temp/true/docker/data/redis2:/data
+    #    entrypoint: redis-server --appendonly yes
+    #    command: ["redis-server", "--appendonly", "yes"]
+    command: redis-server --appendonly yes
+
+  redisdev03:
+    container_name: redisdev03
+    image: redis
+    restart: always
+    ports:
+      - 6381:6379
+    volumes:
+      - /d/temp/true/docker/data/redis3:/data
+    #    entrypoint: redis-server --appendonly yes
+    #    command: ["redis-server", "--appendonly", "yes"]
+    command: redis-server --appendonly yes
+
 #  console2es-local:
 #    image: tsm-registry-01.true.th:5000/mse/fluentd-console2es:1.0
 #    container_name: console2es-local
