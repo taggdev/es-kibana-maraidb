@@ -87,8 +87,8 @@ services:
 #          memory: 512M
     environment:
       TZ: Asia/Bangkok
-      REDISCLUSTER_NODES: "172.16.3.241:7001,172.16.3.242:7001"
-      REDISCLUSTER_PASSWORD: "redis"
+      REDISCLUSTER_NODES: "10.95.108.210:7001,10.95.108.210:7001"
+      REDISCLUSTER_PASSWORD: "eit*132"
       SPRING_KAFKA_BOOTSTRAP_SERVERS:  kafkadev:9092
       ELF_KAFKA_BOOTSTRAP_SERVERS: kafkadev:9092
       LS_JAVA_OPTS: "-server -Xss512k -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -XshowSettings:vm"
