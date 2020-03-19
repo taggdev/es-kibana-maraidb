@@ -4,6 +4,7 @@ version: '3.1'
 services:
   enginedb:
     container_name: enginedb
+    hostname: microengine_enginedb
     image: mariadb:10.4.11
     restart: always
     environment:
@@ -22,6 +23,7 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:5.0.0
+    hostname: microengine_phpmyadmin
     container_name: phpmyadmin
     restart: always
     environment:
@@ -38,6 +40,7 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.5.1
     container_name: elasticsearch
+    hostname: microengine_elasticsearch
     restart: always
     environment:
       discovery.type: single-node
@@ -51,10 +54,11 @@ services:
 
   engine_kibana:
     image: docker.elastic.co/kibana/kibana:7.5.1
+    hostname: microengine_kibana
     container_name: engine_kibana
     restart: always
     environment:
-      ELASTICSEARCH.HOSTS: "http://elasticsearch:9200"
+      ELASTICSEARCH.HOSTS: "http://microengine_elasticsearch:9200"
       TZ: Asia/Bangkok
     ports:
       - 5601:5601
@@ -63,6 +67,7 @@ services:
 
   kafkadev:
     container_name: kafkadev
+    hostname: microengine_kafkadev
     image: taggdev/kafka:1.0
     restart: always
     environment:
@@ -77,6 +82,7 @@ services:
     container_name: dyno-queue-kafka
 #    hostname: malimap_event_mapping{{.Task.Slot}}
     image: taggdev/dyno-queue-kafka:1.0.6
+#    image: taggdev/dyno-queue-kafka:1.0.5
     ports:
       - "11080:8080"
 #    deploy:
@@ -87,8 +93,9 @@ services:
 #          memory: 512M
     environment:
       TZ: Asia/Bangkok
-      REDISCLUSTER_NODES: "10.95.108.210:7001,10.95.108.210:7001"
+      REDISCLUSTER_NODES: "10.95.108.209:7001,10.95.108.210:7001"
       REDISCLUSTER_PASSWORD: "eit*132"
+      GROUPPARTITIONER_KEYTOPARTITIONRULE: '{"128":{ "31":64, "100":96}}'
       SPRING_KAFKA_BOOTSTRAP_SERVERS:  kafkadev:9092
       ELF_KAFKA_BOOTSTRAP_SERVERS: kafkadev:9092
       LS_JAVA_OPTS: "-server -Xss512k -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -XshowSettings:vm"
@@ -96,7 +103,7 @@ services:
       REDISCLUSTER_SHARDS: enginemap_q_1,enginemap_q_2
 #      SPRING_APPLICATION_NAME: mali_promote
 #    extra_hosts:
-#      - "node1:10.37.199.253"
+#      - kafkadev:kafkadev
 
 #  redismaster:
 #    container_name: redismaster
