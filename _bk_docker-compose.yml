@@ -78,11 +78,10 @@ services:
       - 2181:2181
       - 9092:9092
 
-  dyno-queue-kafka:
-    container_name: dyno-queue-kafka
+  microengine_killtime:
+    container_name: microengine_killtime
 #    hostname: malimap_event_mapping{{.Task.Slot}}
     image: taggdev/dyno-queue-kafka:1.0.6
-#    image: taggdev/dyno-queue-kafka:1.0.5
     ports:
       - "11080:8080"
 #    deploy:
@@ -101,9 +100,9 @@ services:
       LS_JAVA_OPTS: "-server -Xss512k -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -XshowSettings:vm"
       REDISCLUSTER_SHARDNAME: enginemap_q
       REDISCLUSTER_SHARDS: enginemap_q_1,enginemap_q_2
-#      SPRING_APPLICATION_NAME: mali_promote
-#    extra_hosts:
-#      - kafkadev:kafkadev
+      SPRING_APPLICATION_NAME: microengine
+    extra_hosts:
+      - kafkadev:10.95.108.214
 
 #  redismaster:
 #    container_name: redismaster

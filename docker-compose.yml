@@ -65,7 +65,20 @@ services:
     networks:
       - enginenet
 
-#  micro-killtime:
+  kafkadev:
+    container_name: kafkadev
+    hostname: microengine_kafkadev
+    image: taggdev/kafka:1.0
+    restart: always
+    environment:
+      ADVERTISED_HOST: localhost
+      ADVERTISED_PORT: 9092
+      TZ: Asia/Bangkok
+    ports:
+      - 2181:2181
+      - 9092:9092
+
+#  microengine_killtime:
 #    container_name: micro-dyno-queue-kafka
 #    image: taggdev/dyno-queue-kafka:1.0.6
 #    ports:

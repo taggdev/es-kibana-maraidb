@@ -1,0 +1,32 @@
+version: '3.4'
+
+services:
+  microengine_killtime:
+    container_name: microengine_killtime
+    #    hostname: malimap_event_mapping{{.Task.Slot}}
+    image: tsm-registry-01.true.th:5000/dyno-queue-kafka:1.0.6
+    ports:
+      - "11080:8080"
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          memory: 512M
+    environment:
+      TZ: Asia/Bangkok
+      REDISCLUSTER_NODES: tsm-redis-01:7001,tsm-redis-02:7001
+      REDISCLUSTER_PASSWORD: eit*132
+      GROUPPARTITIONER_KEYTOPARTITIONRULE: '{"128":{ "31":64, "100":96}}'
+      SPRING_KAFKA_BOOTSTRAP_SERVERS:  tsm-kafka-01:9092,tsm-kafka-02:9092,tsm-kafka-03:9092
+      ELF_KAFKA_BOOTSTRAP_SERVERS: tsm-kafka-01:9092,tsm-kafka-02:9092,tsm-kafka-03:9092
+      LS_JAVA_OPTS: "-server -Xss512k -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -XshowSettings:vm"
+      REDISCLUSTER_SHARDNAME: enginemap_q
+      REDISCLUSTER_SHARDS: enginemap_q_1,enginemap_q_2
+      SPRING_APPLICATION_NAME: microengine
+    extra_hosts:
+      - tsm-kafka-01:10.95.108.206
+      - tsm-kafka-02:10.95.108.207
+      - tsm-kafka-03:10.95.108.208
+      - tsm-redis-01:10.95.108.209
+      - tsm-redis-02:10.95.108.210
