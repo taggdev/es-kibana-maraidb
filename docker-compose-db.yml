@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+  tagg_mariadb:
+    container_name: tagg_mariadb
+    hostname: tagg_mariadb
+    image: mariadb:10.5.9
+    restart: "no"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootroot
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: adminadmin1
+      MYSQL_DATABASE: enginedb
+      TZ: Asia/Bangkok
+    volumes:
+      - /d/temp/tagg/mariadb:/tmp
+    ports:
+      - 3306:3306
+    networks:
+      - tagg_net
+
+  tagg_phpmyadmin:
+    image: phpmyadmin/phpmyadmin:5.1.0
+    hostname: tagg_phpmyadmin
+    container_name: tagg_phpmyadmin
+    restart: "no"
+    environment:
+      TZ: Asia/Bangkok
+    ports:
+      - 18081:80
+    volumes:
+      - /sessions
+    links:
+      - tagg_mariadb:db
+    networks:
+      - tagg_net
+
+networks:
+  tagg_net:
+    driver: bridge

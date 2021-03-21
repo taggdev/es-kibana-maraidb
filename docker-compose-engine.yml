@@ -1,0 +1,144 @@
+# Use root/example as user/password credentials
+version: '3.1'
+
+services:
+  microengine_db:
+    container_name: microengine_db
+    hostname: microengine_db
+    image: mariadb:10.4.11
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootroot
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: adminadmin1
+      MYSQL_DATABASE: enginedb
+      TZ: Asia/Bangkok
+    volumes:
+      #      - ./mysql:/var/lib/mysql
+      - /d/temp/mariadb:/tmp
+    ports:
+      - 3306:3306
+    networks:
+      - enginenet
+
+  microengine_phpmyadmin:
+    image: phpmyadmin/phpmyadmin:5.0.0
+    hostname: microengine_phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    environment:
+      TZ: Asia/Bangkok
+    ports:
+      - 18080:80
+    volumes:
+      - /sessions
+    links:
+      - microengine_db:db
+    networks:
+      - enginenet
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.1
+    container_name: elasticsearch
+    hostname: microengine_elasticsearch
+    restart: always
+    environment:
+      discovery.type: single-node
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      TZ: Asia/Bangkok
+    ports:
+      - 9200:9200
+#      - 9300:9300
+    networks:
+      - enginenet
+
+  engine_kibana:
+    image: docker.elastic.co/kibana/kibana:7.5.1
+    hostname: microengine_kibana
+    container_name: engine_kibana
+    restart: always
+    environment:
+      ELASTICSEARCH.HOSTS: "http://microengine_elasticsearch:9200"
+      TZ: Asia/Bangkok
+    ports:
+      - 5601:5601
+    networks:
+      - enginenet
+
+  kafkadev:
+    container_name: kafkadev
+    hostname: microengine_kafkadev
+    image: taggdev/kafka:1.0
+    restart: always
+    environment:
+      ADVERTISED_HOST: localhost
+      ADVERTISED_PORT: 9092
+      TZ: Asia/Bangkok
+    ports:
+      - 2181:2181
+      - 9092:9092
+
+  dyno-queue-kafka:
+    container_name: dyno-queue-kafka
+#    hostname: malimap_event_mapping{{.Task.Slot}}
+    image: taggdev/dyno-queue-kafka:1.0.6
+#    image: taggdev/dyno-queue-kafka:1.0.5
+    ports:
+      - "11080:8080"
+#    deploy:
+#      mode: replicated
+#      replicas: 2
+#      resources:
+#        limits:
+#          memory: 512M
+    environment:
+      TZ: Asia/Bangkok
+      REDISCLUSTER_NODES: "10.95.108.209:7001,10.95.108.210:7001"
+      REDISCLUSTER_PASSWORD: "eit*132"
+      GROUPPARTITIONER_KEYTOPARTITIONRULE: '{"128":{ "31":64, "100":96}}'
+      SPRING_KAFKA_BOOTSTRAP_SERVERS:  kafkadev:9092
+      ELF_KAFKA_BOOTSTRAP_SERVERS: kafkadev:9092
+      LS_JAVA_OPTS: "-server -Xss512k -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -XshowSettings:vm"
+      REDISCLUSTER_SHARDNAME: enginemap_q
+      REDISCLUSTER_SHARDS: enginemap_q_1,enginemap_q_2
+#      SPRING_APPLICATION_NAME: mali_promote
+#    extra_hosts:
+#      - kafkadev:kafkadev
+
+#  redismaster:
+#    container_name: redismaster
+#    image: redis:5.0.7
+#    ports:
+#      - 7000:6379
+#    command: ["redis-server","--appendonly yes","--requirepass redis","--cluster-enabled yes","--cluster-node-timeout 60000","--cluster-require-full-coverage no"]
+#
+#  redisdev:
+#    container_name: redisdev
+#    image: redis:5.0.7
+#    restart: always
+#    ports:
+#      - 7001:6379
+#      - 7002:6379
+#    volumes:
+#      - /d/temp/true/docker/data/redis:/data
+##      - ./config/redis/redis-cluster.tmpl:/usr/local/etc/redis/redis.conf
+##    command: redis-server --appendonly yes --requirepass redis --cluster-enabled yes --cluster-node-timeout 5000
+##    command: redis-server /usr/local/etc/redis/redis.conf
+#    command: ["redis-server","--appendonly yes","--requirepass redis","--cluster-enabled yes","--cluster-node-timeout 60000","--cluster-require-full-coverage no"]
+##    depends_on:
+##      - redismaster
+
+#  redisdev2:
+#    container_name: redisdev2
+#    image: redis:5.0.7
+#    restart: always
+#    ports:
+#      - 7001:7001
+#    volumes:
+#      - /d/temp/true/docker/data/redis:/data
+#      - ./config/redis/redis-cluster2.tmpl:/usr/local/etc/redis/redis-cluster.tmpl
+#    command: redis-server /usr/local/etc/redis/redis-cluster.tmpl
+
+networks:
+  enginenet:
+    driver: bridge

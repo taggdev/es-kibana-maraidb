@@ -1,0 +1,15 @@
+version: '3.7'
+
+services:
+  tagg_kafka:
+    container_name: tagg_kafka
+    hostname: tagg-kafka
+    image: taggdev/kafka:1.0
+    restart: always
+    environment:
+      ADVERTISED_HOST: localhost
+      ADVERTISED_PORT: 9092
+      TZ: Asia/Bangkok
+    ports:
+      - 2181:2181
+      - 9092:9092

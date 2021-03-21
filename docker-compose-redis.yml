@@ -1,0 +1,12 @@
+version: '3.7'
+
+services:
+  tagg_redis:
+    container_name: tagg_redis
+    image: redis:alpine3.13
+    ports:
+      - "6379:6379"
+    volumes:
+      - /d/temp/tagg/redis/:/tmp
+#      - ../data/redis:/data
+    restart: always
